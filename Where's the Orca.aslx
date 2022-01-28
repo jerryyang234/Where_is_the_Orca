@@ -1,22 +1,241 @@
+<!--Saved by Quest 5.8.6794.35054-->
 <asl version="580">
-
-  <include ref="English.aslx"/>
-  <include ref="Core.aslx"/>
-
-  <game name="Where's the Orca?">
-    <gameid>2d18758b-1b5c-41f5-9488-db14a1256524</gameid>
+  <include ref="English.aslx" />
+  <include ref="Core.aslx" />
+  <game name="where is the orca">
+    <gameid>1bd5104b-0944-4b83-9c52-b17c6000837c</gameid>
     <version>1.0</version>
     <firstpublished>2022</firstpublished>
+    <author type="string"></author>
+    <category>Mystery</category>
+    <description type="string"></description>
+    <menufont>Georgia, serif</menufont>
+    <gridmap />
+    <turnoffcompass />
+    <attr name="autodescription_youcansee" type="int">3</attr>
+    <attr name="autodescription_youcango" type="int">4</attr>
+    <attr name="autodescription_description" type="int">2</attr>
   </game>
-
-  <object name="room">
+  <object name="Cold Seas Zone">
     <inherit name="editor_room" />
     <isroom />
-
+    <description type="string"></description>
     <object name="player">
       <inherit name="editor_object" />
       <inherit name="editor_player" />
+      <attr name="pov_look">get to the orca’s enclosure. Throws food in but the Orca does not come to eat. Peculiar behavior so you start looking for the orca. Does not find the Orca. You decide to search the Orca in the zoo.</attr>
+      <exit alias="southeast" to="Cold Seas Zone">
+        <inherit name="southeastdirection" />
+      </exit>
+    </object>
+    <exit alias="northwest" to="General Office">
+      <inherit name="westdirection" />
+    </exit>
+    <exit alias="southeast" to="Tropical Seas Zone">
+      <inherit name="southeastdirection" />
+    </exit>
+    <exit alias="southwest" to="General Office">
+      <inherit name="southwestdirection" />
+    </exit>
+  </object>
+  <object name="Tropical Seas Zone">
+    <inherit name="editor_room" />
+    <description>Here exhibits tropical seas fishes, include angelfish, arowana, and Barbs.</description>
+    <object name="Mary">
+      <inherit name="editor_object" />
+      <inherit name="female" />
+      <displayverbs type="stringlist">
+        <value>Speak to</value>
+      </displayverbs>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <prefix>Cleaner</prefix>
+      <speak type="script">
+        options = Split("The weather;Her hair;Where should garbage truck park", ";")
+        ShowMenu ("Talk about?", options, false) {
+          switch (result) {
+            case ("The weather") {
+              msg ("'Hasn't it been awful,' says Mary.")
+            }
+            case ("Her hair") {
+              msg ("'Do you like it this colour?' she asks.")
+              options = Split("Yes, you look so pretty;Actually I don't like it", ";")
+              ShowMenu ("Your reply?", options, false) {
+                switch (result) {
+                  case ("Yes, you look so pretty") {
+                    msg ("Today morning, I found something so strange. I saw Stone pushing the garbage container to the Parking Lot B. Stone explains that he works for his friend who is sick today. Since he has work to do in the daytime, he tries to finish his friend's job before the usual time. It is so strange, right? You know, garbage truck should park in the parking Lot A.")
+                  }
+                  case ("Actually I don't like it") {
+                    msg ("Fine. I need to work now.")
+                  }
+                }
+              }
+            }
+            case ("Where should garbage container go to") {
+              msg ("'Oh, it should go to Parking Lot A'")
+            }
+            default {
+              msg ("That was not even an option!")
+            }
+          }
+        }
+      </speak>
+    </object>
+    <exit alias="east" to="Entrance">
+      <inherit name="eastdirection" />
+    </exit>
+    <exit alias="northwest" to="Cold Seas Zone">
+      <inherit name="northwestdirection" />
+    </exit>
+    <object name="Tropical fishes">
+      <inherit name="editor_object" />
+      <inherit name="plural" />
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
     </object>
   </object>
-
+  <object name="General Office">
+    <inherit name="editor_room" />
+    <objectslistprefix>You can see </objectslistprefix>
+    <description>Here is the General Office. Your manager Jim's office and medical room locate here.</description>
+    <firstenter type="script">
+    </firstenter>
+    <enter type="script">
+      options = Split("Yes;NO", ";")
+      ShowMenu ("Do you want to report this incident to your manager Jim? (Warning: different choices may lead to different Ending)", options, true) {
+        switch (result) {
+          case ("Yes") {
+            msg ("Since you are the breeder of the orca, you need to be responsible for this incident. You lose the job.")
+            finish
+          }
+          case ("No") {
+            msg ("You can continue your searching")
+          }
+          default {
+            msg ("That was not even an option!")
+          }
+        }
+      }
+    </enter>
+    <exit alias="southwest" to="Parking Lot B">
+      <inherit name="southwestdirection" />
+    </exit>
+    <exit alias="southeast" to="Tropical Seas Zone">
+      <inherit name="southeastdirection" />
+    </exit>
+    <object name="Camera">
+      <inherit name="editor_object" />
+      <inherit name="openable" />
+      <feature_container />
+      <isopen type="boolean">false</isopen>
+      <close />
+      <openscript type="script">
+        MakeObjectVisible (camera tape)
+      </openscript>
+      <object name="camera tape">
+        <inherit name="editor_object" />
+        <check>It shows that some person pushed a garbage container through the Entrance to the Cold Seas Zone and then went to the parking lot B. It also records that cleaner 2 passed the General Office. </check>
+        <displayverbs type="stringlist" />
+        <visible />
+        <scenery type="boolean">false</scenery>
+      </object>
+    </object>
+    <object name="Medical room">
+      <inherit name="editor_object" />
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+    </object>
+  </object>
+  <object name="Parking Lot B">
+    <inherit name="editor_room" />
+    <object name="Cleaner 1">
+      <inherit name="editor_object" />
+      <inherit name="male" />
+    </object>
+    <exit alias="northeast" to="General Office">
+      <inherit name="northeastdirection" />
+    </exit>
+  </object>
+  <object name="Visitor Center">
+    <inherit name="editor_room" />
+  </object>
+  <object name="Parking Lot A">
+    <inherit name="editor_room" />
+  </object>
+  <object name="Main Entrance">
+    <inherit name="editor_room" />
+    <description>Here is the main entrance. Security guard Stone's office locates here.</description>
+    <object name="desk">
+      <inherit name="editor_object" />
+      <inherit name="surface" />
+      <feature_container />
+      <hidechildren />
+      <listchildren type="boolean">false</listchildren>
+      <take type="script">
+        MakeObjectVisible (laptop)
+      </take>
+      <addscript type="script">
+        MakeObjectVisible (laptop)
+      </addscript>
+      <object name="laptop">
+        <inherit name="editor_object" />
+        <takemsg>The calendar shows "meet with John" at 10 pm, John's office.</takemsg>
+        <check>The calendar shows "meet with John" at 10 pm, John's office.</check>
+        <displayverbs type="stringlist">
+          <value>Take</value>
+        </displayverbs>
+      </object>
+    </object>
+    <object name="table">
+      <inherit name="editor_object" />
+      <inherit name="surface" />
+      <feature_container />
+      <hidechildren type="boolean">false</hidechildren>
+      <take type="script">
+        MakeObjectVisible (notes)
+      </take>
+      <addscript type="script">
+        MakeObjectVisible (notes)
+      </addscript>
+      <object name="notes">
+        <inherit name="editor_object" />
+        <inherit name="plural" />
+        <displayverbs type="stringlist" />
+        <lookat>The left one says, "The cafeteria is so bad"; the right one says, "Use an empty garbage truck to transport".</lookat>
+        <takemsg>The left one says, "The cafeteria is so bad"; the right one says, "Use an empty garbage truck to transport".</takemsg>
+      </object>
+    </object>
+    <exit alias="northwest" to="Entrance">
+      <inherit name="northwestdirection" />
+    </exit>
+    <object name="wall">
+      <inherit name="editor_object" />
+    </object>
+  </object>
+  <object name="Entrance">
+    <inherit name="editor_room" />
+    <exit alias="west" to="Tropical Seas Zone">
+      <inherit name="westdirection" />
+    </exit>
+    <exit alias="southeast" to="Main Entrance">
+      <inherit name="southeastdirection" />
+    </exit>
+  </object>
+  <verb>
+    <property>find</property>
+    <pattern>find</pattern>
+    <defaultexpression>"You can't find " + object.article + "."</defaultexpression>
+  </verb>
+  <verb>
+    <property>check</property>
+    <pattern>check</pattern>
+    <defaultexpression>"You can't check " + object.article + "."</defaultexpression>
+  </verb>
+  <verb>
+    <property>takealook</property>
+    <pattern>take a look</pattern>
+    <defaultexpression>"You can't take a look " + object.article + "."</defaultexpression>
+  </verb>
+  <verb>
+    <property>lookat</property>
+    <pattern>lookat</pattern>
+    <defaultexpression>"You can't lookat " + object.article + "."</defaultexpression>
+  </verb>
 </asl>
