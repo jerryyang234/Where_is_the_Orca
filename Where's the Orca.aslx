@@ -2,7 +2,7 @@
 <asl version="580">
   <include ref="English.aslx" />
   <include ref="Core.aslx" />
-  <game name="where is the orca">
+  <game name="Where is the Orca">
     <gameid>1bd5104b-0944-4b83-9c52-b17c6000837c</gameid>
     <version>1.0</version>
     <firstpublished>2022</firstpublished>
@@ -11,7 +11,7 @@
     <description type="string"></description>
     <menufont>Georgia, serif</menufont>
     <gridmap />
-    <turnoffcompass />
+    <turnoffcompass type="boolean">false</turnoffcompass>
     <attr name="autodescription_youcansee" type="int">3</attr>
     <attr name="autodescription_youcango" type="int">4</attr>
     <attr name="autodescription_description" type="int">2</attr>
@@ -20,6 +20,7 @@
     <inherit name="editor_room" />
     <isroom />
     <description>Here is the cold seas zone</description>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
     <enter type="script">
     </enter>
     <object name="player">
@@ -30,19 +31,23 @@
         <inherit name="southeastdirection" />
       </exit>
     </object>
-    <exit alias="northwest" to="Parking Lot B">
-      <inherit name="westdirection" />
-    </exit>
     <exit alias="southeast" to="Tropical Seas Zone">
       <inherit name="southeastdirection" />
     </exit>
     <exit alias="southwest" to="General Office">
       <inherit name="southwestdirection" />
     </exit>
+    <exit alias="northeast" to="Control Room">
+      <inherit name="northeastdirection" />
+    </exit>
+    <exit alias="east" to="Entrance">
+      <inherit name="eastdirection" />
+    </exit>
   </object>
   <object name="Tropical Seas Zone">
     <inherit name="editor_room" />
     <description>Here exhibits tropical seas fishes, include angelfish, arowana, and Barbs.</description>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
     <object name="Mary">
       <inherit name="editor_object" />
       <inherit name="female" />
@@ -105,10 +110,11 @@
     <inherit name="editor_room" />
     <objectslistprefix>You can see </objectslistprefix>
     <description>Here is the General Office. Your manager Jim's office and medical room locate here.</description>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
     <firstenter type="script">
     </firstenter>
     <enter type="script">
-      options = Split("Yes;NO", ";")
+      options = Split("Yes;No", ";")
       ShowMenu ("Do you want to report this incident to your manager Jim? (Warning: different choices may lead to different Ending)", options, true) {
         switch (result) {
           case ("Yes") {
@@ -151,16 +157,21 @@
       <inherit name="editor_object" />
       <usedefaultprefix type="boolean">false</usedefaultprefix>
       <isroom />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
     </object>
-    <object name="Stun baton">
+    <object name="Front desk">
       <inherit name="editor_object" />
-      <take type="script">
-        AddToInventory (Stun baton)
-      </take>
+      <object name="stun baton">
+        <inherit name="editor_object" />
+        <take />
+      </object>
     </object>
   </object>
   <object name="Parking Lot B">
     <inherit name="editor_room" />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
     <object name="Cleaner 1">
       <inherit name="editor_object" />
       <inherit name="male" />
@@ -171,28 +182,32 @@
   </object>
   <object name="Visitor Center">
     <inherit name="editor_room" />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
     <object name="puzzle answer">
       <inherit name="editor_object" />
-      <take type="script">
-        AddToInventory (puzzle answer)
-      </take>
+      <take />
     </object>
+    <exit alias="southwest" to="Entrance">
+      <inherit name="southwestdirection" />
+    </exit>
   </object>
   <object name="Parking Lot A">
     <inherit name="editor_room" />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
     <object name="garbage truck">
       <inherit name="editor_object" />
-      <search type="script">
-        if (Got(key)) {
-          msg ("you successfully find the orca, and Stone and John are arrested.")
-          finish
-        }
-        else {
-          MakeObjectVisible (Stone)
-        }
-      </search>
+      <attr name="feature_container" type="boolean">false</attr>
+      <hidechildren type="boolean">false</hidechildren>
+      <listchildren />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>open</value>
+      </displayverbs>
       <object name="Stone">
         <inherit name="editor_object" />
+        <inherit name="male" />
+        <usedefaultprefix type="boolean">false</usedefaultprefix>
+        <prefix>security guard </prefix>
         <speak type="script">
           options = Split("The weather;Why is he here;The orca", ";")
           ShowMenu ("Talk about?", options, false) {
@@ -201,7 +216,8 @@
                 msg ("'I hate rainy days.' says Stone.")
               }
               case ("Why is he here") {
-                msg ("'Well, my friend is sick today so he asked me to collect the garbage. I need to drive the garbage truck to garbage disposal center now. Bye.' says Stone")
+                msg ("'Well, my friend is sick today so he asked me to collect the garbage. I need to drive the garbage truck to garbage disposal center now. Bye.' says Stone. Then he drives the garbage truck out of the parking Lot A.")
+                MakeObjectInvisible (garbage truck)
               }
               case ("The orca") {
                 if (Got(Stun baton)) {
@@ -230,10 +246,14 @@
     <exit alias="west" to="Main Entrance">
       <inherit name="westdirection" />
     </exit>
+    <object name="shuttle bus">
+      <inherit name="editor_object" />
+    </object>
   </object>
   <object name="Main Entrance">
     <inherit name="editor_room" />
     <description>Here is the main entrance. Security guard Stone's office locates here.</description>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
     <object name="desk">
       <inherit name="editor_object" />
       <inherit name="surface" />
@@ -260,6 +280,7 @@
       <inherit name="surface" />
       <feature_container />
       <hidechildren />
+      <listchildren />
       <take type="script">
         MakeObjectVisible (notes)
       </take>
@@ -267,7 +288,6 @@
         MakeObjectVisible (note1)
         MakeObjectVisible (note2)
       </addscript>
-      <listchildren />
       <object name="note1">
         <inherit name="editor_object" />
         <displayverbs type="stringlist" />
@@ -288,22 +308,47 @@
       <feature_container />
       <hidechildren />
       <listchildren />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
       <addscript type="script">
         MakeObjectVisible (key)
       </addscript>
+      <object name="key">
+        <inherit name="editor_object" />
+        <take />
+        <ontake type="script">
+          AddToInventory (key)
+        </ontake>
+      </object>
     </object>
-    <exit name="get key" alias="east" to="Parking Lot A">
+    <exit name="unlock exit to parking lot A" alias="east" to="Parking Lot A">
       <inherit name="eastdirection" />
-      <locked />
+      <locked type="boolean">false</locked>
+      <runscript />
+      <lockmessage>That way is locked. You need a key to unlock it.</lockmessage>
+      <script type="script">
+        if (Got(key)) {
+          UnlockExit (unlock exit to parking lot A)
+          MoveObject (player, Parking Lot A)
+        }
+        else {
+          msg ("That way is locked. You need a key to unlock it.")
+        }
+      </script>
     </exit>
   </object>
   <object name="Entrance">
     <inherit name="editor_room" />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
     <exit alias="west" to="Tropical Seas Zone">
       <inherit name="westdirection" />
     </exit>
     <exit alias="southeast" to="Main Entrance">
       <inherit name="southeastdirection" />
+    </exit>
+    <exit alias="northeast" to="Visitor Center">
+      <inherit name="northeastdirection" />
     </exit>
   </object>
   <verb>
@@ -331,4 +376,11 @@
     <pattern>wait</pattern>
     <defaultexpression>"You can't wait " + object.article + "."</defaultexpression>
   </verb>
+  <object name="Control Room">
+    <inherit name="editor_room" />
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <exit alias="southwest" to="Cold Seas Zone">
+      <inherit name="southwestdirection" />
+    </exit>
+  </object>
 </asl>
