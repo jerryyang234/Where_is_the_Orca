@@ -19,7 +19,9 @@
   <object name="Cold Seas Zone">
     <inherit name="editor_room" />
     <isroom />
-    <description type="string"></description>
+    <description>Here is the cold seas zone</description>
+    <enter type="script">
+    </enter>
     <object name="player">
       <inherit name="editor_object" />
       <inherit name="editor_player" />
@@ -28,7 +30,7 @@
         <inherit name="southeastdirection" />
       </exit>
     </object>
-    <exit alias="northwest" to="General Office">
+    <exit alias="northwest" to="Parking Lot B">
       <inherit name="westdirection" />
     </exit>
     <exit alias="southeast" to="Tropical Seas Zone">
@@ -70,8 +72,8 @@
                 }
               }
             }
-            case ("Where should garbage container go to") {
-              msg ("'Oh, it should go to Parking Lot A'")
+            case ("Where should garbage truck park") {
+              msg ("'Oh, it should part at Parking Lot A'")
             }
             default {
               msg ("That was not even an option!")
@@ -90,6 +92,13 @@
       <inherit name="editor_object" />
       <inherit name="plural" />
       <usedefaultprefix type="boolean">false</usedefaultprefix>
+    </object>
+    <object name="Bathroom">
+      <inherit name="editor_object" />
+      <isroom />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
     </object>
   </object>
   <object name="General Office">
@@ -125,7 +134,7 @@
       <inherit name="editor_object" />
       <inherit name="openable" />
       <feature_container />
-      <isopen type="boolean">false</isopen>
+      <isopen />
       <close />
       <openscript type="script">
         MakeObjectVisible (camera tape)
@@ -141,6 +150,13 @@
     <object name="Medical room">
       <inherit name="editor_object" />
       <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <isroom />
+    </object>
+    <object name="Stun baton">
+      <inherit name="editor_object" />
+      <take type="script">
+        AddToInventory (Stun baton)
+      </take>
     </object>
   </object>
   <object name="Parking Lot B">
@@ -155,9 +171,65 @@
   </object>
   <object name="Visitor Center">
     <inherit name="editor_room" />
+    <object name="puzzle answer">
+      <inherit name="editor_object" />
+      <take type="script">
+        AddToInventory (puzzle answer)
+      </take>
+    </object>
   </object>
   <object name="Parking Lot A">
     <inherit name="editor_room" />
+    <object name="garbage truck">
+      <inherit name="editor_object" />
+      <search type="script">
+        if (Got(key)) {
+          msg ("you successfully find the orca, and Stone and John are arrested.")
+          finish
+        }
+        else {
+          MakeObjectVisible (Stone)
+        }
+      </search>
+      <object name="Stone">
+        <inherit name="editor_object" />
+        <speak type="script">
+          options = Split("The weather;Why is he here;The orca", ";")
+          ShowMenu ("Talk about?", options, false) {
+            switch (result) {
+              case ("The weather") {
+                msg ("'I hate rainy days.' says Stone.")
+              }
+              case ("Why is he here") {
+                msg ("'Well, my friend is sick today so he asked me to collect the garbage. I need to drive the garbage truck to garbage disposal center now. Bye.' says Stone")
+              }
+              case ("The orca") {
+                if (Got(Stun baton)) {
+                  if (Got(puzzle answer)) {
+                    msg ("Although the security guard Stone is stronger than you, the stun baton let you wins him. Congratulations! You successfully find the orca and this incident's suspects John and Stone.")
+                    finish
+                  }
+                  else {
+                    msg ("Although the security guard Stone is stronger than you, the stun baton let you wins him. Congratulations! You successfully find the orca and this incident's suspecter Stone.")
+                    finish
+                  }
+                }
+                else {
+                  msg ("As the security guard, Stone is stronger than you. He stuns you and accuses you that you tried to steal the orca. You are arrested.")
+                  finish
+                }
+              }
+              default {
+                msg ("That was not even an option!")
+              }
+            }
+          }
+        </speak>
+      </object>
+    </object>
+    <exit alias="west" to="Main Entrance">
+      <inherit name="westdirection" />
+    </exit>
   </object>
   <object name="Main Entrance">
     <inherit name="editor_room" />
@@ -167,7 +239,7 @@
       <inherit name="surface" />
       <feature_container />
       <hidechildren />
-      <listchildren type="boolean">false</listchildren>
+      <listchildren />
       <take type="script">
         MakeObjectVisible (laptop)
       </take>
@@ -187,19 +259,24 @@
       <inherit name="editor_object" />
       <inherit name="surface" />
       <feature_container />
-      <hidechildren type="boolean">false</hidechildren>
+      <hidechildren />
       <take type="script">
         MakeObjectVisible (notes)
       </take>
       <addscript type="script">
-        MakeObjectVisible (notes)
+        MakeObjectVisible (note1)
+        MakeObjectVisible (note2)
       </addscript>
-      <object name="notes">
+      <listchildren />
+      <object name="note1">
         <inherit name="editor_object" />
-        <inherit name="plural" />
         <displayverbs type="stringlist" />
-        <lookat>The left one says, "The cafeteria is so bad"; the right one says, "Use an empty garbage truck to transport".</lookat>
+        <check>"The cafeteria is so bad".</check>
         <takemsg>The left one says, "The cafeteria is so bad"; the right one says, "Use an empty garbage truck to transport".</takemsg>
+      </object>
+      <object name="note2">
+        <inherit name="editor_object" />
+        <check>"Use an empty garbage truck to transport".</check>
       </object>
     </object>
     <exit alias="northwest" to="Entrance">
@@ -207,7 +284,18 @@
     </exit>
     <object name="wall">
       <inherit name="editor_object" />
+      <inherit name="surface" />
+      <feature_container />
+      <hidechildren />
+      <listchildren />
+      <addscript type="script">
+        MakeObjectVisible (key)
+      </addscript>
     </object>
+    <exit name="get key" alias="east" to="Parking Lot A">
+      <inherit name="eastdirection" />
+      <locked />
+    </exit>
   </object>
   <object name="Entrance">
     <inherit name="editor_room" />
@@ -237,5 +325,10 @@
     <property>lookat</property>
     <pattern>lookat</pattern>
     <defaultexpression>"You can't lookat " + object.article + "."</defaultexpression>
+  </verb>
+  <verb>
+    <property>wait</property>
+    <pattern>wait</pattern>
+    <defaultexpression>"You can't wait " + object.article + "."</defaultexpression>
   </verb>
 </asl>
