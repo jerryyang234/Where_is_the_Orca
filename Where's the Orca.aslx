@@ -1,4 +1,4 @@
-<!--Saved by Quest 5.8.6794.35054-->
+<!--Saved by Quest 5.8.6836.13983-->
 <asl version="580">
   <include ref="English.aslx" />
   <include ref="Core.aslx" />
@@ -183,12 +183,47 @@
   <object name="Visitor Center">
     <inherit name="editor_room" />
     <usedefaultprefix type="boolean">false</usedefaultprefix>
-    <object name="puzzle answer">
-      <inherit name="editor_object" />
-      <take />
-    </object>
     <exit alias="southwest" to="Entrance">
       <inherit name="southwestdirection" />
+    </exit>
+    <object name="John Office">
+      <description><![CDATA[This is John's office. <br/>]]></description>
+      <object name="File">
+        <inherit name="editor_object" />
+        <look>The file show's "DQRUFDIRUDPLOOLRQ"</look>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+          <value>Decrypt</value>
+        </displayverbs>
+        <take />
+        <decrypt type="scriptdictionary">
+          <item key="Book">
+            msg ("ANORCAFORAMILLION")
+            SetObjectFlagOn (File, "decrypted")
+          </item>
+        </decrypt>
+      </object>
+      <object name="Bookshelf">
+        <inherit name="editor_object" />
+        <inherit name="container_open" />
+        <look>There are many books on the bookshelf. You find one book seems to be often used.</look>
+        <feature_container />
+        <object name="Book">
+          <inherit name="editor_object" />
+          <look><![CDATA[This book is about the story of Julius Caesar.<br/><br/>One underlined sentence interested you.<br/><br/>"Caesar will encode the secrete message by shifting all letters 3 back. In this case, the important messages are protected".<br/><br/>Some notes are written on the same page:<br/><br/>"fantastic idea"<br/>"IDQWDVWLFLGHD"]]></look>
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+            <value>Take</value>
+          </displayverbs>
+        </object>
+      </object>
+      <exit alias="southwest" to="Visitor Center">
+        <inherit name="southwestdirection" />
+      </exit>
+    </object>
+    <exit alias="northeast" to="John Office">
+      <inherit name="northeastdirection" />
     </exit>
   </object>
   <object name="Parking Lot A">
@@ -203,6 +238,16 @@
         <value>Look at</value>
         <value>open</value>
       </displayverbs>
+      <search type="script">
+        msg ("You find the orca is in the truck.")
+        if (GetBoolean(File, "decrypted")) {
+          msg ("You called the police and prevent stone the escape.")
+          msg ("The police come. You tell them what had happened here.")
+          msg ("You show the decrypted message from John's office.")
+          msg ("John and Stone are arrested. The orca is sent back to the pool.")
+          finish
+        }
+      </search>
       <object name="Stone">
         <inherit name="editor_object" />
         <inherit name="male" />
@@ -383,4 +428,9 @@
       <inherit name="southwestdirection" />
     </exit>
   </object>
+  <verb>
+    <property>decrypt</property>
+    <pattern>decrypt</pattern>
+    <defaultexpression>"You can't decrypt " + object.article + "."</defaultexpression>
+  </verb>
 </asl>
