@@ -27,6 +27,7 @@
       <inherit name="editor_object" />
       <inherit name="editor_player" />
       <attr name="pov_look">get to the orca’s enclosure. Throws food in but the Orca does not come to eat. Peculiar behavior so you start looking for the orca. Does not find the Orca. You decide to search the Orca in the zoo.</attr>
+      <statusattributes type="stringdictionary" />
       <exit alias="southeast" to="Cold Seas Zone">
         <inherit name="southeastdirection" />
       </exit>
@@ -196,13 +197,17 @@
           <value>Take</value>
           <value>Decrypt</value>
         </displayverbs>
-        <take />
+        <take type="boolean">false</take>
         <decrypt type="scriptdictionary">
           <item key="Book">
             msg ("ANORCAFORAMILLION")
             SetObjectFlagOn (File, "decrypted")
           </item>
         </decrypt>
+        <feature_startscript />
+        <attr name="_initialise_" type="script">
+          SetObjectFlagOn (File, "encrypted")
+        </attr>
       </object>
       <object name="Bookshelf">
         <inherit name="editor_object" />
@@ -246,6 +251,11 @@
           msg ("You show the decrypted message from John's office.")
           msg ("John and Stone are arrested. The orca is sent back to the pool.")
           finish
+        }
+        else if (not GetBoolean(File, "decrypted")) {
+          msg ("You called the police and prevent stone the escape.")
+          msg ("The police come. You tell them what had happened here.")
+          msg ("Stone are arrested. The orca is sent back to the pool.")
         }
       </search>
       <object name="Stone">
